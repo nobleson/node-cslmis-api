@@ -1,0 +1,21 @@
+{
+  "name": "node-cslmis-api",
+  "version": "1.0.0",
+  "description": "CSLMIS Microservice NodeJs-Application ",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ityav Luke",
+  "license": "ISC",
+  "dependencies": {
+    "boom": "^7.3.0",
+    "fastify": "^2.1.0",
+    "fastify-swagger": "^2.3.2",
+    "mongoose": "^5.4.20"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
+}
