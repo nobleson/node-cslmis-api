@@ -3,7 +3,7 @@ const fastify = require('fastify')({
     logger: true
   })
   
-  // Require external modules
+  // Require external modcules
   const mongoose = require('mongoose')
   
   // Import Routes
@@ -14,19 +14,24 @@ const fastify = require('fastify')({
   
   // Register Swagger
   fastify.register(require('fastify-swagger'), swagger.options)
-  
-  // Connect to DB
-  //provide a sensible default for local development
-  const db_name = "sampledb";
-  const mongodb_connection_string = 'mongodb://127.0.0.1:27017/' + db_name;
-  //take advantage of openshift env vars when available:
-  if(process.env.OPENSHIFT_MONGODB_DB_URL){
-    mongodb_connection_string = process.env.OPENSHIFT_MONGODB_DB_URL + db_name;
-  }  
-  mongoose.connect(mongodb_connection_string)
-    .then(() => console.log('MongoDB connected...'))
+
+  var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
+  ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1',
+  //mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
+   mongoDatabase = process.env.MONGODB_DATABASE || 'sampledb', 
+   mongoPassword = process.env.MONGODB_PASSWORD, mongoUser = process.env.MONGODB_USER,
+   mongoPort = process.env.MONGO_PORT || '27017',
+  mongoHost = process.env.MONGO_CLUSTER_HOST || 'localhost',
+  mongoURL = '';
+
+  mongoURL = 'mongodb://'+mongoHost + ':' +  mongoPort + '/' + mongoDatabase;
+
+
+    console.log('MongoURL '+mongoURL) 
+    mongoose.connect(mongoURL,{ useNewUrlParser: true }) 
+    .then(() => console.log('MongoDB connected…'))
     .catch(err => console.log(err))
-  
+
   // Loop over each route
   routes.forEach((route, index) => {
     fastify.route(route)
@@ -35,17 +40,16 @@ const fastify = require('fastify')({
   // Run the server!
   const start = async () => {
     try {
-      var server_port = process.env.OPENSHIFT_NODEJS_PORT || 3000
-      var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
-      fastify.listen(3000, server_ip_address, function (err, address) {
+      fastify.listen(port, ip, function (err, address) {
         if (err) {
           fastify.log.error(err)
           process.exit(1)
         }
+        console.log(`server listening on ${address}`) 
         fastify.log.info(`server listening on ${address}`)
       })
      // await fastify.listen(3000)
-      fastify.swagger()
+      //fastify.swagger()
    
     } catch (err) {
       fastify.log.error(err)
